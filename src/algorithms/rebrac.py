@@ -68,8 +68,10 @@ class Config:
     # classification
     n_classes: int = 21
     sigma_frac: float = 0.75
-    v_min: float = None
-    v_max: float = None
+    v_min: float = float('inf')
+    v_max: float = float('inf')
+
+    _wandb: Dict = None
 
     def __post_init__(self):
         self.name = f"{self.name}-{self.dataset_name}-{str(uuid.uuid4())[:8]}"
@@ -806,9 +808,9 @@ def train(config: Config):
     )
 
     v_min, v_max = config.v_min, config.v_max
-    if v_min is None:
+    if v_min == float('inf'):
         v_min = buffer.min
-    if v_max is None:
+    if v_max == float('inf'):
         v_max = buffer.max
     critic = CriticTrainState.create(
         apply_fn=critic_module.apply,
