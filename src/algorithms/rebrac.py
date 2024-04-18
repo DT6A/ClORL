@@ -68,6 +68,8 @@ class Config:
     # classification
     n_classes: int = 21
     sigma_frac: float = 0.75
+    v_min: float = None
+    v_max: float = None
 
     def __post_init__(self):
         self.name = f"{self.name}-{self.dataset_name}-{str(uuid.uuid4())[:8]}"
@@ -802,12 +804,18 @@ def train(config: Config):
         n_hiddens=config.critic_n_hiddens,
         n_classes=config.n_classes,
     )
+
+    v_min, v_max = config.v_min, config.v_max
+    if v_min is None:
+        v_min = buffer.min
+    if v_max is None:
+        v_max = buffer.max
     critic = CriticTrainState.create(
         apply_fn=critic_module.apply,
         params=critic_module.init(critic_key, init_state, init_action),
         target_params=critic_module.init(critic_key, init_state, init_action),
-        support=jnp.linspace(buffer.min, buffer.max, config.n_classes + 1, dtype=jnp.float32),
-        sigma=config.sigma_frac * (buffer.max - buffer.min) / config.n_classes,
+        support=jnp.linspace(v_min, v_max, config.n_classes + 1, dtype=jnp.float32),
+        sigma=config.sigma_frac * (v_max - v_min) / config.n_classes,
         tx=optax.adam(learning_rate=config.critic_learning_rate),
     )
 
