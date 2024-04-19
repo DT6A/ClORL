@@ -8,9 +8,10 @@ import os
 import math
 import uuid
 from copy import deepcopy
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from functools import partial
 from typing import Any, Callable, Dict, Sequence, Tuple, Union
+from collections import defaultdict
 
 import chex
 import d4rl  # noqa
@@ -71,7 +72,7 @@ class Config:
     v_min: float = float('inf')
     v_max: float = float('inf')
 
-    _wandb: Dict = None
+    _wandb: Dict = field(default_factory=lambda: {})
 
     def __post_init__(self):
         self.name = f"{self.name}-{self.dataset_name}-{str(uuid.uuid4())[:8]}"
