@@ -3,7 +3,7 @@
 
 import os
 
-# os.environ["TF_CUDNN_DETERMINISTIC"] = "1"  # For reproducibility
+os.environ["TF_CUDNN_DETERMINISTIC"] = "1"  # For reproducibility
 
 import math
 import uuid
@@ -69,6 +69,7 @@ class Config:
     # classification
     n_classes: int = 21
     sigma_frac: float = 0.75
+    actor_entropy_coef: float = 0.0
     v_min: float = float('inf')
     v_max: float = float('inf')
 
@@ -562,6 +563,7 @@ def update_actor(
     critic: TrainState,
     batch: Dict[str, jax.Array],
     beta: float,
+    beta_entr: float,
     tau: float,
     normalize_q: bool,
     metrics: Metrics,
@@ -581,13 +583,6 @@ def update_actor(
         if normalize_q:
             lmbda = jax.lax.stop_gradient(1 / jax.numpy.abs(q_values).mean())
 
-        loss = (beta * bc_penalty - lmbda * q_values).mean()
-
-        # logging stuff
-        random_actions = jax.random.uniform(
-            random_action_key, shape=batch["actions"].shape, minval=-1.0, maxval=1.0
-        )
-
         epsilon = 1e-8
 
         probs = jnp.clip(jax.nn.softmax(logits.mean(axis=0), axis=-1), epsilon, 1.0 - epsilon)
@@ -599,6 +594,13 @@ def update_actor(
 
         diff = q_data_entropy - q_actions_entropy
         abs_diff = jnp.abs(diff)
+
+        loss = (beta * bc_penalty - lmbda * q_values + beta_entr * abs_diff).mean()
+
+        # logging stuff
+        random_actions = jax.random.uniform(
+            random_action_key, shape=batch["actions"].shape, minval=-1.0, maxval=1.0
+        )
 
         new_metrics = metrics.update(
             {
@@ -701,6 +703,7 @@ def update_td3(
     gamma: float,
     actor_bc_coef: float,
     critic_bc_coef: float,
+    actor_entropy_coef: float,
     tau: float,
     policy_noise: float,
     noise_clip: float,
@@ -719,7 +722,7 @@ def update_td3(
         metrics,
     )
     key, new_actor, new_critic, new_metrics = update_actor(
-        key, actor, new_critic, batch, actor_bc_coef, tau, normalize_q, new_metrics
+        key, actor, new_critic, batch, actor_bc_coef, actor_entropy_coef, tau, normalize_q, new_metrics
     )
     return key, new_actor, new_critic, new_metrics
 
@@ -733,6 +736,7 @@ def update_td3_no_targets(
     metrics: Metrics,
     actor_bc_coef: float,
     critic_bc_coef: float,
+    actor_entropy_coef: float,
     tau: float,
     policy_noise: float,
     noise_clip: float,
@@ -827,6 +831,7 @@ def train(config: Config):
         gamma=config.gamma,
         actor_bc_coef=config.actor_bc_coef,
         critic_bc_coef=config.critic_bc_coef,
+        actor_entropy_coef=config.actor_entropy_coef,
         tau=config.tau,
         policy_noise=config.policy_noise,
         noise_clip=config.noise_clip,
@@ -838,6 +843,7 @@ def train(config: Config):
         gamma=config.gamma,
         actor_bc_coef=config.actor_bc_coef,
         critic_bc_coef=config.critic_bc_coef,
+        actor_entropy_coef=config.actor_entropy_coef,
         tau=config.tau,
         policy_noise=config.policy_noise,
         noise_clip=config.noise_clip,
