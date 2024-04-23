@@ -67,7 +67,7 @@ class Config:
     train_seed: int = 0
     eval_seed: int = 42
     # classification
-    n_classes: int = 21
+    n_classes: int = 101
     sigma_frac: float = 0.75
     actor_entropy_coef: float = 0.0
     v_min: float = float('inf')
@@ -652,6 +652,7 @@ def update_critic(
     bc_penalty = ((next_actions - batch["next_actions"]) ** 2).sum(-1)
 
     logits = critic.apply_fn(critic.target_params, batch["next_states"], next_actions)
+    # logits = critic.apply_fn(critic.params, batch["next_states"], next_actions)
     probs = nn.softmax(logits, axis=-1)
     next_q = transform_from_probs(probs, critic.support).min(0)
 
@@ -945,4 +946,8 @@ def train(config: Config):
 
 
 if __name__ == "__main__":
-    train()
+    try:
+        train()
+    except Exception as e:
+        print("An exception occured")
+        print(e)
