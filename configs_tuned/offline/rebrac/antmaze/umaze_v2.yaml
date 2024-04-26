@@ -3,7 +3,7 @@ actor_learning_rate: 0.001
 actor_ln: false
 actor_n_hiddens: 3
 batch_size: 1024
-critic_bc_coef: 0.002
+critic_bc_coef: 0.0
 critic_learning_rate: 0.001
 critic_ln: true
 critic_n_hiddens: 3
@@ -26,3 +26,5 @@ policy_noise: 0.2
 project: ReBRAC
 tau: 0.005
 train_seed: 0
+v_min: 0
+v_max: 100

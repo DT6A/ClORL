@@ -9,7 +9,7 @@ critic_ln: true
 critic_n_hiddens: 3
 dataset_name: walker2d-expert-v2
 eval_episodes: 10
-eval_every: 5
+eval_every: 10
 eval_seed: 42
 gamma: 0.99
 group: rebrac-walker2d-expert-v2
