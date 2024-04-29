@@ -708,7 +708,7 @@ def evaluate(key: jax.random.PRNGKey, env: gym.Env, params: jax.Array, action_fn
     return np.array(returns)
 
 
-# @pyrallis.wrap()
+@pyrallis.wrap()
 def train(config: Config):
     dict_config = asdict(config)
 
