@@ -1,0 +1,3 @@
+dataset_name: halfcheetah-random-v2
+expectile: 0.95
+temperature: 3.0

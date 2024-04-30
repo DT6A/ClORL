@@ -1,0 +1,3 @@
+dataset_name: walker2d-expert-v2
+expectile: 0.9
+temperature: 6.0
