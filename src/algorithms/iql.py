@@ -23,7 +23,7 @@ import wandb
 from flax.core import FrozenDict
 from flax.training.train_state import TrainState
 from tqdm.auto import trange
- 
+
 from tensorflow_probability.substrates import jax as tfp
 
 tfd = tfp.distributions
@@ -634,7 +634,6 @@ def update_actor(
     def actor_loss_fn(actor_params) -> Tuple[jnp.ndarray, Dict]:
         dist = actor.apply_fn(actor_params, batch["states"], training=True, rngs={'dropout': random_dropout_key})
         log_probs = dist.log_prob(batch["actions"])
-                
         actor_loss = -(exp_a * log_probs).mean()
 
         return actor_loss, {'actor_loss': actor_loss, 'adv': (q - v).mean()}
@@ -745,7 +744,7 @@ def train(config: Config):
     )
 
     if config.decay_schedule == "cosine":
-        schedule_fn = optax.cosine_decay_schedule(-config.actor_learning_rate, config.num_epochs)
+        schedule_fn = optax.cosine_decay_schedule(-config.actor_learning_rate, config.num_epochs * config.num_updates_on_epoch)
         optimizer = optax.chain(optax.scale_by_adam(), optax.scale_by_schedule(schedule_fn))
     else:
         optimizer = optax.adam(learning_rate=config.actor_learning_rate)
@@ -836,15 +835,14 @@ def train(config: Config):
 
     @jax.jit
     def actor_action_fn(key: jax.random.PRNGKey, params: jax.Array, obs: jax.Array):
-        key, actions = sample_actions(key, actor.apply_fn, params, obs, temperature=0.0)
+        key, actions = sample_actions(key, actor_module.apply, params, obs, temperature=0.0)
         return key, jnp.clip(actions, -1, 1)
 
     for epoch in trange(config.num_epochs, desc="IQL Epochs"):
         # metrics for accumulation during epoch and logging to wandb
         # we need to reset them every epoch
-        
+
         update_carry["metrics"] = Metrics.create(bc_metrics_to_log)
-    
         update_carry = jax.lax.fori_loop(
             lower=0,
             upper=config.num_updates_on_epoch,
@@ -869,6 +867,7 @@ def train(config: Config):
             )
             normalized_score = eval_env.get_normalized_score(eval_returns) * 100.0
             wandb.log({
+                "actor_params":	jnp.mean(jnp.concatenate(jax.tree.flatten(jax.tree_util.tree_map(lambda x: x.reshape(-1), update_carry["actor"].params))[0])),
                 "epoch": epoch,
                 "eval/return_mean": np.mean(eval_returns),
                 "eval/return_std": np.std(eval_returns),
@@ -877,10 +876,10 @@ def train(config: Config):
             })
 
 
+
 if __name__ == "__main__":
     try:
         train()
     except Exception as e:
         print("An exception occured")
         print(e)
-
