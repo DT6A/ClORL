@@ -162,7 +162,7 @@ def modify_reward(dataset, env_name, min_ret, max_ret, max_episode_steps=1000):
     if any(s in env_name for s in ("halfcheetah", "hopper", "walker2d")):
         dataset["rewards"] = dataset["rewards"] / (max_ret - min_ret) * max_episode_steps
     elif "antmaze" in env_name:
-        dataset["rewards"] = dataset["rewards"] - 1.0
+        dataset["rewards"] = dataset["rewards"] * 100.0
 
 
 def qlearning_dataset(env, dataset_name, normalize_reward=False, dataset=None, terminate_on_end=False, discount=0.99,
