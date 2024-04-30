@@ -158,9 +158,8 @@ def return_reward_range(dataset, max_episode_steps):
     return min(returns), max(returns)
 
 
-def modify_reward(dataset, env_name, max_episode_steps=1000):
+def modify_reward(dataset, env_name, min_ret, max_ret, max_episode_steps=1000):
     if any(s in env_name for s in ("halfcheetah", "hopper", "walker2d")):
-        min_ret, max_ret = return_reward_range(dataset, max_episode_steps)
         dataset["rewards"] = dataset["rewards"] / (max_ret - min_ret) * max_episode_steps
     elif "antmaze" in env_name:
         dataset["rewards"] = dataset["rewards"] - 1.0
@@ -251,6 +250,7 @@ def qlearning_dataset(env, dataset_name, normalize_reward=False, dataset=None, t
         mc_returns_ += calc_return_to_go(is_sparse, episode_rewards, episode_terminals, discount)
     print("SHAPE", np.array(mc_returns_).shape, np.array(reward_).shape, np.array(done_).shape)
     assert np.array(mc_returns_).shape == np.array(reward_).shape
+    print(np.array(action_).max(), np.array(action_).min())
 
     cls_rewards = np.array(mc_returns_)
     # to_probs, from_probs = hl_gauss_transform(jnp.min(cls_rewards), jnp.max(cls_rewards), num_bins=n_classes,
@@ -311,8 +311,8 @@ class ReplayBuffer:
                 buffer["next_states"], self.mean, self.std
             )
         if normalize_reward:
-            modify_reward(buffer, dataset_name)
-            
+            modify_reward(buffer, dataset_name, self.min, self.max)
+
         self.data = buffer
 
     @property
@@ -417,7 +417,7 @@ def wrap_env(
 # https://github.com/Howuhh/sac-n-jax/blob/a0d4b8ab8b457658e416cd554faa47506bc2367c/sac_n_jax_flax.py#L91C1-L98C63
 class TanhNormal(distrax.Transformed):
     def __init__(self, loc, scale):
-        normal_dist = distrax.Normal(loc, scale)
+        normal_dist = distrax.MultivariateNormalDiag(loc, scale)
         tanh_bijector = distrax.Tanh()
         super().__init__(distribution=normal_dist, bijector=tanh_bijector)
 
@@ -457,13 +457,23 @@ class NormalTanhPolicy(nn.Module):
         log_std_max = self.log_std_max or LOG_STD_MAX
         log_stds = jnp.clip(log_stds, log_std_min, log_std_max)
 
-        
 
+        if not self.tanh_squash_distribution:
+            means = nn.tanh(means)
+
+        base_dist = tfd.MultivariateNormalDiag(loc=means,
+                                               scale_diag=jnp.exp(log_stds) *
+                                               temperature)
         if self.tanh_squash_distribution:
-            return TanhNormal(loc=means, scale_diag=jnp.exp(log_stds) * temperature)
+            return tfd.TransformedDistribution(distribution=base_dist,
+                                               bijector=tfb.Tanh())
         else:
-            return distrax.Normal(nn.tanh(means), jnp.exp(log_stds) * temperature)
-            
+            return base_dist
+
+        #if self.tanh_squash_distribution:
+        #    return TanhNormal(loc=means, scale=jnp.exp(log_stds) * temperature)
+        #else:
+        #    return distrax.MultivariateNormalDiag(nn.tanh(means), jnp.exp(log_stds) * temperature)
 
 # Here was partial(jax.jit)
 def _sample_actions(key: jax.random.PRNGKey,
@@ -643,7 +653,6 @@ def update_actor(
     def actor_loss_fn(actor_params) -> Tuple[jnp.ndarray, Dict]:
         dist = actor.apply_fn(actor_params, batch["states"], training=True, rngs={'dropout': random_dropout_key})
         log_probs = dist.log_prob(batch["actions"])
-                
         actor_loss = -(exp_a * log_probs).mean()
 
         return actor_loss, {'actor_loss': actor_loss, 'adv': (q - v).mean()}
@@ -651,7 +660,9 @@ def update_actor(
     (loss, loss_metrics), grads = jax.value_and_grad(actor_loss_fn, has_aux=True)(
         actor.params
     )
-    
+
+    grads = jax.tree_util.tree_map(lambda x: jnp.nan_to_num(x), grads)
+
     new_actor = actor.apply_gradients(grads=grads)
     new_metrics = metrics.update(loss_metrics)
 
@@ -757,7 +768,7 @@ def train(config: Config):
     )
 
     if config.decay_schedule == "cosine":
-        schedule_fn = optax.cosine_decay_schedule(-config.actor_learning_rate, config.num_epochs)
+        schedule_fn = optax.cosine_decay_schedule(-config.actor_learning_rate, config.num_epochs * config.num_updates_on_epoch)
         optimizer = optax.chain(optax.scale_by_adam(), optax.scale_by_schedule(schedule_fn))
     else:
         optimizer = optax.adam(learning_rate=config.actor_learning_rate)
