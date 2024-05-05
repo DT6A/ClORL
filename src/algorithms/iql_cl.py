@@ -663,7 +663,8 @@ def update_actor(
 
     def actor_loss_fn(actor_params) -> Tuple[jnp.ndarray, Dict]:
         dist = actor.apply_fn(actor_params, batch["states"], training=True, rngs={'dropout': random_dropout_key})
-        log_probs = dist.log_prob(batch["actions"])
+        eps = 1e-6
+        log_probs = dist.log_prob(jax.numpy.clip(batch["actions"], -1 + eps, 1 - eps))
         actor_loss = -(exp_a * log_probs).mean()
 
         return actor_loss, {'actor_loss': actor_loss, 'adv': (q - v).mean()}
@@ -672,7 +673,7 @@ def update_actor(
         actor.params
     )
 
-    grads = jax.tree_util.tree_map(lambda x: jnp.nan_to_num(x), grads)
+    # grads = jax.tree_util.tree_map(lambda x: jnp.nan_to_num(x), grads)
 
     new_actor = actor.apply_gradients(grads=grads)
     new_metrics = metrics.update(loss_metrics)
