@@ -69,7 +69,7 @@ class Config:
     gamma: float = 0.99
     # evaluation params
     eval_episodes: int = 10
-    eval_every: int = 5
+    eval_every: int = 10
     # general params
     train_seed: int = 0
     eval_seed: int = 42

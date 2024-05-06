@@ -69,7 +69,7 @@ class Config:
     gamma: float = 0.99
     # evaluation params
     eval_episodes: int = 10
-    eval_every: int = 5
+    eval_every: int = 10
     # general params
     train_seed: int = 0
     eval_seed: int = 42
@@ -158,11 +158,18 @@ def return_reward_range(dataset, max_episode_steps):
     return min(returns), max(returns)
 
 
+# def modify_reward(dataset, env_name, min_ret, max_ret, max_episode_steps=1000):
+#     if "antmaze" in env_name:
+#         dataset["rewards"] = dataset["rewards"] # * 100
+#     else:
+#         dataset["rewards"] = dataset["rewards"] / (max_ret - min_ret)  # * max_episode_steps
+
+
 def modify_reward(dataset, env_name, min_ret, max_ret, max_episode_steps=1000):
     if any(s in env_name for s in ("halfcheetah", "hopper", "walker2d")):
         dataset["rewards"] = dataset["rewards"] / (max_ret - min_ret) * max_episode_steps
     elif "antmaze" in env_name:
-        dataset["rewards"] = dataset["rewards"] * 100
+        dataset["rewards"] = dataset["rewards"] * 100.0
 
 
 def qlearning_dataset(env, dataset_name, normalize_reward=False, dataset=None, terminate_on_end=False, discount=0.99,
@@ -365,10 +372,12 @@ def normalize(
 
 # @jax.jit
 def transform_to_probs(target: jax.Array, support: jax.Array, sigma: float) -> jax.Array:
-    cdf_evals = jax.scipy.special.erf((support - target) / (jnp.sqrt(2) * sigma))
+    cdf_evals = jax.scipy.special.erf(jnp.maximum((support - target), 1e-6) / (jnp.sqrt(2) * sigma))
+    # jax.debug.print("CDF: {x}", x=cdf_evals.mean())
     z = cdf_evals[-1] - cdf_evals[0]
+    # jax.debug.print("z: {x}", x=z.mean())
     bin_probs = cdf_evals[1:] - cdf_evals[:-1]
-    return bin_probs / z
+    return bin_probs / (z + 1e-6)
 
 
 transform_to_probs = jax.vmap(transform_to_probs, in_axes=(0, None, None))
@@ -577,19 +586,24 @@ def update_q(
     # https://github.com/ikostrikov/implicit_q_learning/blob/09d700248117881a75cb21f0adb95c6c8a694cb2/critic.py#L32-L50
     
     next_v = target_value.apply_fn(target_value.params, batch["next_states"])
-
+    # jax.debug.print("next v: {x}", x=next_v.mean())
     target_q = batch["rewards"] + gamma * (1 - batch["dones"]) * next_v
     target_probs = transform_to_probs(target_q, critic.support, critic.sigma)
 
     def critic_loss_fn(critic_params) -> Tuple[jnp.ndarray, Dict]:
         q1, q2 = critic.apply_fn(critic_params, batch["states"], batch["actions"])
+        # jax.debug.print("q logits: {x}", x=q1.mean())
+        probs1, probs2 = nn.softmax(q1, axis=-1), nn.softmax(q2, axis=-1)
+        q1_val, q2_val = transform_from_probs(probs1, critic.support), transform_from_probs(probs2, critic.support)
+        # jax.debug.print("target probs: {x}", x=target_probs.mean())
         critic_loss1 = optax.softmax_cross_entropy(logits=q1, labels=target_probs[None, ...]).mean(1).sum(0)
         critic_loss2 = optax.softmax_cross_entropy(logits=q2, labels=target_probs[None, ...]).mean(1).sum(0)
         critic_loss = critic_loss1 + critic_loss2
+        # jax.debug.print("q loss: {x}", x=critic_loss)
         return critic_loss, {
             'critic_loss': critic_loss,
-            'q1': q1.mean(),
-            'q2': q2.mean()
+            'q1': q1_val.mean(),
+            'q2': q2_val.mean()
         }
 
     (loss, loss_metrics), grads = jax.value_and_grad(critic_loss_fn, has_aux=True)(
@@ -616,7 +630,7 @@ def update_v(
     q1, q2 = transform_from_probs(probs1, critic.support), transform_from_probs(probs2, critic.support)
     # probs = jnp.where((q1 < q2)[:, None], probs1, probs2)
     q = jnp.minimum(q1, q2)
-    
+    # jax.debug.print("q1 shape: {x}", x=q)
     def expectile_loss(diff, expectile=0.8):
         # https://github.com/ikostrikov/implicit_q_learning/blob/09d700248117881a75cb21f0adb95c6c8a694cb2/critic.py#L8-L10
         weight = jnp.where(diff > 0, expectile, (1 - expectile))
@@ -626,6 +640,7 @@ def update_v(
     def value_loss_fn(value_params) -> Tuple[jnp.ndarray, Dict]:
         v = value.apply_fn(value_params, batch["states"])
         value_loss = expectile_loss(q - v, expectile).mean()
+        # jax.debug.print("v loss: {x}", x=value_loss)
         return value_loss, {
             'value_loss': value_loss,
             'v': v.mean(),
@@ -659,14 +674,20 @@ def update_actor(
     q1, q2 = transform_from_probs(probs1, critic.support), transform_from_probs(probs2, critic.support)
     q = jnp.minimum(q1, q2)
     exp_a = jnp.exp((q - v) * temperature)
-    exp_a = jnp.minimum(exp_a, 100.0)
+    # jax.debug.print("no clip adv: {x}", x=exp_a.mean())
+    exp_a = jnp.clip(exp_a, -100.0, 100.0)
+
+    # jax.debug.print("q: {x}", x=q.mean())
+    # jax.debug.print("v: {x}", x=v.mean())
 
     def actor_loss_fn(actor_params) -> Tuple[jnp.ndarray, Dict]:
         dist = actor.apply_fn(actor_params, batch["states"], training=True, rngs={'dropout': random_dropout_key})
         eps = 1e-6
         log_probs = dist.log_prob(jax.numpy.clip(batch["actions"], -1 + eps, 1 - eps))
         actor_loss = -(exp_a * log_probs).mean()
-
+        # jax.debug.print("probs: {x}", x=log_probs.mean())
+        # jax.debug.print("exp adv: {x}", x=exp_a.mean())
+        # jax.debug.print("loss: {x}", x=actor_loss)
         return actor_loss, {'actor_loss': actor_loss, 'adv': (q - v).mean()}
 
     (loss, loss_metrics), grads = jax.value_and_grad(actor_loss_fn, has_aux=True)(

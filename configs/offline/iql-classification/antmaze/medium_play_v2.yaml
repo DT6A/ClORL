@@ -12,5 +12,7 @@ state_dependent_std: true
 tanh_squash_distribution: false
 tau: 0.005
 temperature: 6.0
+eval_episodes: 100
+eval_every: 50
 v_min: 0
 v_max: 100
