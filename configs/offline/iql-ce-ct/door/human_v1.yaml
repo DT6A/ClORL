@@ -12,5 +12,5 @@ state_dependent_std: true
 tanh_squash_distribution: false
 tau: 0.005
 temperature: 1.0
-n_classes:
-sigma_frac:
+n_classes: 401
+sigma_frac: 0.75
