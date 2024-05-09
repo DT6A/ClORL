@@ -476,7 +476,7 @@ def transform_to_probs(target: jax.Array, support: jax.Array, sigma: float) -> j
     cdf_evals = jax.scipy.special.erf((support - target) / (jnp.sqrt(2) * sigma))
     z = cdf_evals[-1] - cdf_evals[0]
     bin_probs = cdf_evals[1:] - cdf_evals[:-1]
-    return bin_probs / z
+    return bin_probs / (z + 1e-6)
 
 
 transform_to_probs = jax.vmap(transform_to_probs, in_axes=(0, None, None))
