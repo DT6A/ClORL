@@ -29,4 +29,4 @@ train_seed: 0
 v_min: 0
 v_max: 100
 n_classes: 101
-sigma_frac: 0.55
+sigma_frac: 0.75

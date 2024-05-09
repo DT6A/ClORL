@@ -28,5 +28,5 @@ tau: 0.005
 train_seed: 0
 v_min: 0
 v_max: 100
-n_classes: 51
-sigma_frac: 0.85
+n_classes: 401
+sigma_frac: 0.75

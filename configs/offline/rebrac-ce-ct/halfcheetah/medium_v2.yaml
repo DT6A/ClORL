@@ -27,4 +27,4 @@ project: ReBRAC
 tau: 0.005
 train_seed: 0
 n_classes: 21
-sigma_frac: 0.85
+sigma_frac: 0.75

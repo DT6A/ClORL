@@ -26,5 +26,5 @@ policy_noise: 0.2
 project: ReBRAC
 tau: 0.005
 train_seed: 0
-n_classes: 101
+n_classes: 201
 sigma_frac: 0.55
