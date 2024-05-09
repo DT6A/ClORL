@@ -61,7 +61,7 @@ class Config:
     
     # training params
     dataset_name: str = "halfcheetah-medium-v2"
-    batch_size: int = 1024
+    batch_size: int = 256
     num_epochs: int = 1000
     num_updates_on_epoch: int = 1000
     normalize_reward: bool = False
@@ -159,9 +159,9 @@ def return_reward_range(dataset, max_episode_steps):
 
 
 def modify_reward(dataset, env_name, min_ret, max_ret, max_episode_steps=1000):
-    if any(s in env_name for s in ("halfcheetah", "hopper", "walker2d")):
-        dataset["rewards"] = dataset["rewards"] / (max_ret - min_ret) * max_episode_steps
-    elif "antmaze" in env_name:
+    # if any(s in env_name for s in ("halfcheetah", "hopper", "walker2d")):
+    #     dataset["rewards"] = dataset["rewards"] / (max_ret - min_ret) * max_episode_steps
+    if "antmaze" in env_name:
         dataset["rewards"] = dataset["rewards"] * 100.0
 
 
