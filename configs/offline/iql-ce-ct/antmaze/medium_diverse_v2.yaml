@@ -16,3 +16,5 @@ eval_episodes: 100
 eval_every: 50
 v_min: 0
 v_max: 100
+n_classes:
+sigma_frac:
