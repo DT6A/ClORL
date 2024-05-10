@@ -1,0 +1,14 @@
+actor_learning_rate: 3e-4
+critic_learning_rate: 3e-4
+dataset_name: hammer-expert-v1
+dropout_rate: 0.1
+expectile: 0.95
+gamma: 0.99
+log_std_max: 2.0
+log_std_min: -20.0
+normalize_reward: false
+normalize_states: true
+state_dependent_std: true
+tanh_squash_distribution: false
+tau: 0.005
+temperature: 0.5

@@ -1,0 +1,16 @@
+actor_learning_rate: 3e-4
+critic_learning_rate: 3e-4
+dataset_name: antmaze-large-diverse-v2
+dropout_rate: null
+expectile: 0.9
+gamma: 0.99
+log_std_max: 2.0
+log_std_min: -20.0
+normalize_reward: true
+normalize_states: true
+state_dependent_std: true
+tanh_squash_distribution: false
+tau: 0.005
+temperature: 6.0
+eval_episodes: 100
+eval_every: 50
