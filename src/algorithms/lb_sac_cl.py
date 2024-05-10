@@ -52,6 +52,11 @@ class Config:
     # general params
     train_seed: int = 10
     eval_seed: int = 42
+    # classification
+    n_classes: int = 101
+    sigma_frac: float = 0.75
+    v_min: float = float('inf')
+    v_max: float = float('inf')
 
     def __post_init__(self):
         self.name = f"{self.name}-{self.dataset_name}-{str(uuid.uuid4())[:8]}"
@@ -299,6 +304,8 @@ def normalize(
 
 class CriticTrainState(TrainState):
     target_params: flax.core.FrozenDict
+    support: jax.Array
+    sigma: float
 
     def soft_update(self, tau):
         new_target_params = optax.incremental_update(self.params, self.target_params, tau)
@@ -388,6 +395,7 @@ class Critic(nn.Module):
     hidden_dim: int = 256
     layernorm: bool = True
     n_hiddens: int = 3
+    n_classes: int = 21
 
     @nn.compact
     def __call__(self, state, action):
@@ -413,11 +421,12 @@ class Critic(nn.Module):
                 nn.LayerNorm() if self.layernorm else identity,
             ]
         layers += [
-            nn.Dense(1, kernel_init=uniform_init(3e-3), bias_init=uniform_init(3e-3))
+            # nn.Dense(1, kernel_init=uniform_init(3e-3), bias_init=uniform_init(3e-3))
+            nn.Dense(self.n_classes, kernel_init=uniform_init(3e-3), bias_init=uniform_init(3e-3))
         ]
         network = nn.Sequential(layers)
         state_action = jnp.hstack([state, action])
-        out = network(state_action).squeeze(-1)
+        out = network(state_action)#.squeeze(-1)
         return out
 
 
@@ -426,6 +435,7 @@ class EnsembleCritic(nn.Module):
     num_critics: int = 10
     layernorm: bool = True
     n_hiddens: int = 3
+    n_classes: int = 21
 
     @nn.compact
     def __call__(self, state, action):
@@ -437,7 +447,7 @@ class EnsembleCritic(nn.Module):
             split_rngs={"params": True},
             axis_size=self.num_critics
         )
-        q_values = ensemble(self.hidden_dim, self.layernorm, self.n_hiddens)(state, action)
+        q_values = ensemble(self.hidden_dim, self.layernorm, self.n_hiddens, self.n_classes)(state, action)
         return q_values
 
 
@@ -462,7 +472,11 @@ def update_actor(
         actions_dist = actor.apply_fn(actor_params, batch["states"])
         actions, actions_logp = actions_dist.sample_and_log_prob(seed=key)
 
-        q_values = critic.apply_fn(critic.params, batch["states"], actions).min(0)
+        # q_values = critic.apply_fn(critic.params, batch["states"], actions).min(0)
+        logits = critic.apply_fn(critic.params, batch["states"], actions)
+        probs = nn.softmax(logits, axis=-1)
+        q_values = transform_from_probs(probs, critic.support).min(0)
+
         loss = (alpha.apply_fn(alpha.params) * actions_logp.sum(-1) - q_values).mean()
 
         batch_entropy = -actions_logp.sum(-1).mean()
@@ -508,14 +522,20 @@ def update_critic(
     next_actions_dist = actor.apply_fn(actor.params, batch["next_states"])
     next_actions, next_actions_logp = next_actions_dist.sample_and_log_prob(seed=key)
 
-    next_q = critic.apply_fn(critic.target_params, batch["next_states"], next_actions).min(0)
+    logits = critic.apply_fn(critic.target_params, batch["next_states"], next_actions)
+    probs = nn.softmax(logits, axis=-1)
+    next_q = transform_from_probs(probs, critic.support).min(0)
+    # next_q = critic.apply_fn(critic.target_params, batch["next_states"], next_actions).min(0)
     next_q = next_q - alpha.apply_fn(alpha.params) * next_actions_logp.sum(-1)
     target_q = batch["rewards"] + (1 - batch["dones"]) * gamma * next_q
 
     def critic_loss_fn(critic_params):
         # [N, batch_size] - [1, batch_size]
         q = critic.apply_fn(critic_params, batch["states"], batch["actions"])
-        loss = ((q - target_q[None, ...]) ** 2).mean(1).sum(0)
+        target_probs = transform_to_probs(target_q, critic.support, critic.sigma)
+
+        # loss = ((q - target_q[None, ...]) ** 2).mean(1).sum(0)
+        loss = optax.softmax_cross_entropy(logits=q, labels=target_probs[None, ...]).mean(1).sum(0)
         return loss
 
     loss, grads = jax.value_and_grad(critic_loss_fn)(critic.params)
@@ -533,6 +553,25 @@ def eval_actions_jit(actor: TrainState, obs: jax.Array) -> jax.Array:
     action = dist.mean()
     return action
 
+
+def transform_to_probs(target: jax.Array, support: jax.Array, sigma: float) -> jax.Array:
+    cdf_evals = jax.scipy.special.erf((support - target) / (jnp.sqrt(2) * sigma))
+    z = cdf_evals[-1] - cdf_evals[0]
+    bin_probs = cdf_evals[1:] - cdf_evals[:-1]
+    return bin_probs / (z + 1e-6)
+
+
+transform_to_probs = jax.vmap(transform_to_probs, in_axes=(0, None, None))
+
+
+# @jax.jit
+def transform_from_probs(probs: jax.Array, support: jax.Array) -> jax.Array:
+    centers = (support[:-1] + support[1:]) / 2
+    return jnp.sum(probs * centers)
+
+
+transform_from_probs = jax.vmap(transform_from_probs, in_axes=(0, None))
+transform_from_probs = jax.vmap(transform_from_probs, in_axes=(0, None))
 
 def make_env(env_name: str, seed: int) -> gym.Env:
     env = gym.make(env_name)
@@ -596,11 +635,20 @@ def main(config: Config):
         num_critics=config.num_critics,
         layernorm=config.critic_ln,
         n_hiddens=config.critic_n_hiddens,
+        n_classes=config.n_classes,
     )
+
+    v_min, v_max = config.v_min, config.v_max
+    if v_min == float('inf'):
+        v_min = buffer.min
+    if v_max == float('inf'):
+        v_max = buffer.max
     critic = CriticTrainState.create(
         apply_fn=critic_module.apply,
         params=critic_module.init(critic_key, init_state, init_action),
         target_params=critic_module.init(critic_key, init_state, init_action),
+        support=jnp.linspace(v_min, v_max, config.n_classes + 1, dtype=jnp.float32),
+        sigma=config.sigma_frac * (v_max - v_min) / config.n_classes,
         tx=optax.adam(learning_rate=config.critic_learning_rate),
     )
 

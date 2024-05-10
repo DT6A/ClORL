@@ -1,6 +1,7 @@
 dataset_name: antmaze-large-play-v2
 eval_episodes: 100
 eval_every: 50
+normalize_reward: True
 actor_learning_rate: 17e-4
 critic_learning_rate: 17e-4
 alpha_learning_rate: 17e-4
