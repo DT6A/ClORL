@@ -7,7 +7,7 @@ import uuid
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 from functools import partial
-from typing import Any, Callable, Dict, Sequence, Tuple, Union, Optional
+from typing import Any, Callable, Dict, Sequence, Tuple, Union, Optional, List
 from collections import defaultdict
 
 import chex
