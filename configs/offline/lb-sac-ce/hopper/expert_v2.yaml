@@ -1,10 +1,10 @@
 dataset_name: hopper-expert-v2
 eval_episodes: 10
 eval_every: 10
-actor_learning_rate: 17e-4
-critic_learning_rate: 17e-4
-alpha_learning_rate: 17e-4
-batch_size: 8192
+actor_learning_rate: 6e-4
+critic_learning_rate: 6e-4
+alpha_learning_rate: 6e-4
+batch_size: 1024
 critic_ln: True
 num_critics: 10
 n_classes: 101

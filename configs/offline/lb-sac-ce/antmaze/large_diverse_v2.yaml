@@ -2,9 +2,13 @@ dataset_name: antmaze-large-diverse-v2
 eval_episodes: 100
 eval_every: 50
 normalize_reward: True
-actor_learning_rate: 17e-4
-critic_learning_rate: 17e-4
-alpha_learning_rate: 17e-4
-batch_size: 8192
+actor_learning_rate: 6e-4
+critic_learning_rate: 6e-4
+alpha_learning_rate: 6e-4
+batch_size: 1024
 critic_ln: True
 num_critics: 10
+n_classes: 101
+sigma_frac: 0.75
+v_min: 0
+v_max: 100
