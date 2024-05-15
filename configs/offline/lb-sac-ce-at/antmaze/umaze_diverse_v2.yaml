@@ -7,7 +7,7 @@ critic_learning_rate: 6e-4
 alpha_learning_rate: 6e-4
 batch_size: 1024
 critic_ln: True
-num_critics: 25
+num_critics: 2
 n_classes: 101
 sigma_frac: 0.75
 v_min: 0
