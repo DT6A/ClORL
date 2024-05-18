@@ -1,0 +1,59 @@
+project: ClORL
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  actor_bc_coef:
+    values:
+      - 0.001
+      - 0.01
+      - 0.05
+      - 0.1
+  config_path:
+    values:
+      - configs/offline/rebrac/hopper/medium_replay_v2.yaml
+      - configs/offline/rebrac/hopper/medium_v2.yaml
+      - configs/offline/rebrac/hopper/medium_expert_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_replay_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_expert_v2.yaml
+      - configs/offline/rebrac/hopper/full_replay_v2.yaml
+      - configs/offline/rebrac/hopper/random_v2.yaml
+      - configs/offline/rebrac/hopper/expert_v2.yaml
+      - configs/offline/rebrac/halfcheetah/full_replay_v2.yaml
+      - configs/offline/rebrac/halfcheetah/random_v2.yaml
+      - configs/offline/rebrac/halfcheetah/expert_v2.yaml
+      - configs/offline/rebrac/walker2d/full_replay_v2.yaml
+      - configs/offline/rebrac/walker2d/random_v2.yaml
+      - configs/offline/rebrac/walker2d/expert_v2.yaml
+  critic_bc_coef:
+    values:
+      - 0
+      - 0.001
+      - 0.01
+      - 0.1
+      - 0.5
+  critic_ln:
+    value: true
+  eval_every:
+    value: 10
+  n_classes:
+    value: 101
+  num_epochs:
+    value: 1000
+  sigma_frac:
+    value: 0.75
+  train_seed:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+program: src/algorithms/rebrac_cl.py
+

@@ -1,0 +1,48 @@
+project: ClORL
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  actor_bc_coef:
+    values:
+      - 0.0005
+      - 0.001
+      - 0.002
+      - 0.003
+  config_path:
+    values:
+      - configs_tuned/offline/rebrac/antmaze/umaze_v2.yaml
+      - configs_tuned/offline/rebrac/antmaze/umaze_diverse_v2.yaml
+      - configs_tuned/offline/rebrac/antmaze/medium_play_v2.yaml
+      - configs_tuned/offline/rebrac/antmaze/medium_diverse_v2.yaml
+      - configs_tuned/offline/rebrac/antmaze/large_play_v2.yaml
+      - configs_tuned/offline/rebrac/antmaze/large_diverse_v2.yaml
+  critic_bc_coef:
+    values:
+      - 0
+      - 0.0005
+      - 0.001
+      - 0.002
+  eval_every:
+    value: 50
+  n_classes:
+    value: 101
+  num_epochs:
+    value: 1000
+  sigma_frac:
+    value: 0.75
+  train_seed:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+  v_max:
+    value: 100
+  v_min:
+    value: 0
+program: src/algorithms/rebrac_cl.py
+

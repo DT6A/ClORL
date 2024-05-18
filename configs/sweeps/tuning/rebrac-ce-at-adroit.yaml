@@ -1,0 +1,53 @@
+project: ClORL
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  actor_bc_coef:
+    values:
+      - 0.001
+      - 0.01
+      - 0.05
+      - 0.1
+  config_path:
+    values:
+      - configs/offline/rebrac/pen/human_v1.yaml
+      - configs/offline/rebrac/pen/cloned_v1.yaml
+      - configs/offline/rebrac/pen/expert_v1.yaml
+      - configs/offline/rebrac/door/human_v1.yaml
+      - configs/offline/rebrac/door/cloned_v1.yaml
+      - configs/offline/rebrac/door/expert_v1.yaml
+      - configs/offline/rebrac/hammer/human_v1.yaml
+      - configs/offline/rebrac/hammer/cloned_v1.yaml
+      - configs/offline/rebrac/hammer/expert_v1.yaml
+      - configs/offline/rebrac/relocate/human_v1.yaml
+      - configs/offline/rebrac/relocate/cloned_v1.yaml
+      - configs/offline/rebrac/relocate/expert_v1.yaml
+  critic_bc_coef:
+    values:
+      - 0
+      - 0.001
+      - 0.01
+      - 0.1
+      - 0.5
+  critic_ln:
+    value: true
+  eval_every:
+    value: 10
+  n_classes:
+    value: 101
+  num_epochs:
+    value: 1000
+  sigma_frac:
+    value: 0.75
+  train_seed:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+program: src/algorithms/rebrac_cl.py
+
