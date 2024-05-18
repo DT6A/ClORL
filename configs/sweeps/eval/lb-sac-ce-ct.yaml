@@ -1,1 +1,54 @@
+project: ClORL
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  config_path:
+    values:
+      - configs/offline/lb-sac-ce-ct/hopper/medium_replay_v2.yaml
+      - configs/offline/lb-sac-ce-ct/hopper/medium_v2.yaml
+      - configs/offline/lb-sac-ce-ct/hopper/medium_expert_v2.yaml
+      - configs/offline/lb-sac-ce-ct/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/lb-sac-ce-ct/halfcheetah/medium_v2.yaml
+      - configs/offline/lb-sac-ce-ct/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/lb-sac-ce-ct/walker2d/medium_replay_v2.yaml
+      - configs/offline/lb-sac-ce-ct/walker2d/medium_v2.yaml
+      - configs/offline/lb-sac-ce-ct/walker2d/medium_expert_v2.yaml
+      - configs/offline/lb-sac-ce-ct/pen/human_v1.yaml
+      - configs/offline/lb-sac-ce-ct/pen/cloned_v1.yaml
+      - configs/offline/lb-sac-ce-ct/pen/expert_v1.yaml
+      - configs/offline/lb-sac-ce-ct/door/human_v1.yaml
+      - configs/offline/lb-sac-ce-ct/door/cloned_v1.yaml
+      - configs/offline/lb-sac-ce-ct/door/expert_v1.yaml
+      - configs/offline/lb-sac-ce-ct/hammer/human_v1.yaml
+      - configs/offline/lb-sac-ce-ct/hammer/cloned_v1.yaml
+      - configs/offline/lb-sac-ce-ct/hammer/expert_v1.yaml
+      - configs/offline/lb-sac-ce-ct/relocate/human_v1.yaml
+      - configs/offline/lb-sac-ce-ct/relocate/cloned_v1.yaml
+      - configs/offline/lb-sac-ce-ct/relocate/expert_v1.yaml
+      - configs/offline/lb-sac-ce-ct/hopper/full_replay_v2.yaml
+      - configs/offline/lb-sac-ce-ct/hopper/random_v2.yaml
+      - configs/offline/lb-sac-ce-ct/hopper/expert_v2.yaml
+      - configs/offline/lb-sac-ce-ct/halfcheetah/full_replay_v2.yaml
+      - configs/offline/lb-sac-ce-ct/halfcheetah/random_v2.yaml
+      - configs/offline/lb-sac-ce-ct/halfcheetah/expert_v2.yaml
+      - configs/offline/lb-sac-ce-ct/walker2d/full_replay_v2.yaml
+      - configs/offline/lb-sac-ce-ct/walker2d/random_v2.yaml
+      - configs/offline/lb-sac-ce-ct/walker2d/expert_v2.yaml
+      - configs/offline/lb-sac-ce-ct/antmaze/umaze_v2.yaml
+      - configs/offline/lb-sac-ce-ct/antmaze/umaze_diverse_v2.yaml
+      - configs/offline/lb-sac-ce-ct/antmaze/medium_play_v2.yaml
+      - configs/offline/lb-sac-ce-ct/antmaze/medium_diverse_v2.yaml
+      - configs/offline/lb-sac-ce-ct/antmaze/large_play_v2.yaml
+      - configs/offline/lb-sac-ce-ct/antmaze/large_diverse_v2.yaml
+  train_seed:
+    values:
+      - 10
+      - 11
+      - 12
+      - 13
+program: src/algorithms/lb_sac_cl.py
 

@@ -1,1 +1,54 @@
+project: ClORL
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  config_path:
+    values:
+      - configs/offline/rebrac/hopper/medium_replay_v2.yaml
+      - configs/offline/rebrac/hopper/medium_v2.yaml
+      - configs/offline/rebrac/hopper/medium_expert_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_replay_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_expert_v2.yaml
+      - configs/offline/rebrac/pen/human_v1.yaml
+      - configs/offline/rebrac/pen/cloned_v1.yaml
+      - configs/offline/rebrac/pen/expert_v1.yaml
+      - configs/offline/rebrac/door/human_v1.yaml
+      - configs/offline/rebrac/door/cloned_v1.yaml
+      - configs/offline/rebrac/door/expert_v1.yaml
+      - configs/offline/rebrac/hammer/human_v1.yaml
+      - configs/offline/rebrac/hammer/cloned_v1.yaml
+      - configs/offline/rebrac/hammer/expert_v1.yaml
+      - configs/offline/rebrac/relocate/human_v1.yaml
+      - configs/offline/rebrac/relocate/cloned_v1.yaml
+      - configs/offline/rebrac/relocate/expert_v1.yaml
+      - configs/offline/rebrac/hopper/full_replay_v2.yaml
+      - configs/offline/rebrac/hopper/random_v2.yaml
+      - configs/offline/rebrac/hopper/expert_v2.yaml
+      - configs/offline/rebrac/halfcheetah/full_replay_v2.yaml
+      - configs/offline/rebrac/halfcheetah/random_v2.yaml
+      - configs/offline/rebrac/halfcheetah/expert_v2.yaml
+      - configs/offline/rebrac/walker2d/full_replay_v2.yaml
+      - configs/offline/rebrac/walker2d/random_v2.yaml
+      - configs/offline/rebrac/walker2d/expert_v2.yaml
+      - configs/offline/rebrac/antmaze/umaze_v2.yaml
+      - configs/offline/rebrac/antmaze/umaze_diverse_v2.yaml
+      - configs/offline/rebrac/antmaze/medium_play_v2.yaml
+      - configs/offline/rebrac/antmaze/medium_diverse_v2.yaml
+      - configs/offline/rebrac/antmaze/large_play_v2.yaml
+      - configs/offline/rebrac/antmaze/large_diverse_v2.yaml
+  train_seed:
+    values:
+      - 10
+      - 11
+      - 12
+      - 13
+program: src/algorithms/rebrac_cl.py
 
