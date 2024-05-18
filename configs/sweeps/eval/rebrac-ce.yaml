@@ -38,6 +38,12 @@ parameters:
       - configs/offline/rebrac/walker2d/full_replay_v2.yaml
       - configs/offline/rebrac/walker2d/random_v2.yaml
       - configs/offline/rebrac/walker2d/expert_v2.yaml
+      - configs/offline/rebrac/antmaze/umaze_v2.yaml
+      - configs/offline/rebrac/antmaze/umaze_diverse_v2.yaml
+      - configs/offline/rebrac/antmaze/medium_play_v2.yaml
+      - configs/offline/rebrac/antmaze/medium_diverse_v2.yaml
+      - configs/offline/rebrac/antmaze/large_play_v2.yaml
+      - configs/offline/rebrac/antmaze/large_diverse_v2.yaml
   critic_ln:
     value: true
   eval_every:
