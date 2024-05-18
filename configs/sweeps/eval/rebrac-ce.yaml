@@ -1,1 +1,36 @@
-
+project: ClORL
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  config_path:
+    values:
+      - configs/offline/rebrac/hopper/medium_replay_v2.yaml
+      - configs/offline/rebrac/hopper/medium_v2.yaml
+      - configs/offline/rebrac/hopper/medium_expert_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_v2.yaml
+      - configs/offline/rebrac/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_replay_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_v2.yaml
+      - configs/offline/rebrac/walker2d/medium_expert_v2.yaml
+  critic_ln:
+    value: true
+  eval_every:
+    value: 10
+  n_classes:
+    value: 101
+  num_epochs:
+    value: 1000
+  sigma_frac:
+    value: 0.75
+  train_seed:
+    values:
+      - 10
+      - 11
+      - 12
+      - 13
+program: src/algorithms/rebrac_cl.py
