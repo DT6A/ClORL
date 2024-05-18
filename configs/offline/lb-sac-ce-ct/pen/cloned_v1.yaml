@@ -1,0 +1,11 @@
+dataset_name: pen-cloned-v1
+eval_episodes: 10
+eval_every: 10
+actor_learning_rate: 6e-4
+critic_learning_rate: 6e-4
+alpha_learning_rate: 6e-4
+batch_size: 1024
+critic_ln: True
+num_critics: 50
+n_classes: 101
+sigma_frac: 0.75
