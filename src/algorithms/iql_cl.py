@@ -79,6 +79,8 @@ class Config:
     sigma_frac: float = 0.75
     v_min: float = float('inf')
     v_max: float = float('inf')
+    v_expand: float = 0.0
+    v_expand_mode: str = "both"
 
     _wandb: Dict = field(default_factory=lambda: {})
 
@@ -830,6 +832,18 @@ def train(config: Config):
         v_min = buffer.min
     if v_max == float('inf'):
         v_max = buffer.max
+
+    expand = (v_max - v_min) * config.v_expand
+    if config.v_expand_mode == "both":
+        v_min -= expand / 2
+        v_max += expand / 2
+    elif config.v_expand_mode == "min":
+        v_min -= expand
+    elif config.v_expand_mode == "max":
+        v_max += expand
+    else:
+        raise ValueError("Invalid expansion")
+
     critic = CriticTrainState.create(
         apply_fn=critic_module.apply,
         params=critic_module.init(critic_key, init_state, init_action),
