@@ -8,4 +8,4 @@ batch_size: 1024
 critic_ln: True
 num_critics: 5
 n_classes: 101
-sigma_frac: 0.75
+sigma_frac: 0.85
