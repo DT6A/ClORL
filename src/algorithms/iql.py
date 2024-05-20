@@ -7,7 +7,7 @@ import uuid
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 from functools import partial
-from typing import Any, Callable, Dict, Sequence, Tuple, Union, Optional
+from typing import Any, Callable, Dict, Sequence, Tuple, Union, Optional, List
 from collections import defaultdict
 
 import chex
@@ -39,7 +39,7 @@ class Config:
     name: str = "iql"
     
     # model params
-    actor_hidden_dims: Sequence[int] = field(default_factory=lambda: [256, 256])
+    actor_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
     actor_learning_rate: float = 3e-4
     state_dependent_std: bool = True
     dropout_rate: Optional[float] = None
@@ -50,12 +50,12 @@ class Config:
     decay_schedule: str = "cosine"
     temperature: float = 0.1
 
-    critic_hidden_dims: Sequence[int] = field(default_factory=lambda: [256, 256])
+    critic_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
     critic_activations: str = "relu"
     critic_learning_rate: float = 3e-4
     tau: float = 0.005
 
-    value_hidden_dims: Sequence[int] = field(default_factory=lambda: [256, 256])
+    value_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])
     value_learning_rate: float = 3e-4
     expectile: float = 0.8
     
