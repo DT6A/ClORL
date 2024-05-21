@@ -17,7 +17,7 @@ import jax.numpy as jnp
 import flax
 import flax.linen as nn
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from typing import Dict, Tuple, Any, Callable
 from tqdm.auto import trange
 
@@ -60,6 +60,7 @@ class Config:
     v_expand: float = 0.0
     v_expand_mode: str = "both"
 
+    _wandb: Dict = field(default_factory=lambda: {})
     def __post_init__(self):
         self.name = f"{self.name}-{self.dataset_name}-{str(uuid.uuid4())[:8]}"
 
