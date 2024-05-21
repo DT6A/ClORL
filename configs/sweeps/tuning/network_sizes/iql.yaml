@@ -1,0 +1,80 @@
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+metric:
+  goal: maximize
+  name: eval/normalized_score_mean
+name: IQL depth
+parameters:
+  batch_size:
+    value: 256
+  config_path:
+    values:
+      - configs/offline/iql/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/iql/halfcheetah/medium_v2.yaml
+      - configs/offline/iql/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/iql/halfcheetah/random_v2.yaml
+      - configs/offline/iql/halfcheetah/expert_v2.yaml
+      - configs/offline/iql/halfcheetah/full_replay_v2.yaml
+      - configs/offline/iql/hammer/expert_v1.yaml
+      - configs/offline/iql/hammer/human_v1.yaml
+      - configs/offline/iql/hammer/cloned_v1.yaml
+      - configs/offline/iql/hopper/medium_replay_v2.yaml
+      - configs/offline/iql/hopper/medium_v2.yaml
+      - configs/offline/iql/hopper/medium_expert_v2.yaml
+      - configs/offline/iql/hopper/random_v2.yaml
+      - configs/offline/iql/hopper/expert_v2.yaml
+      - configs/offline/iql/hopper/full_replay_v2.yaml
+      - configs/offline/iql/door/expert_v1.yaml
+      - configs/offline/iql/door/human_v1.yaml
+      - configs/offline/iql/door/cloned_v1.yaml
+      - configs/offline/iql/antmaze/umaze_v2.yaml
+      - configs/offline/iql/antmaze/medium_play_v2.yaml
+      - configs/offline/iql/antmaze/medium_diverse_v2.yaml
+      - configs/offline/iql/antmaze/large_diverse_v2.yaml
+      - configs/offline/iql/antmaze/umaze_diverse_v2.yaml
+      - configs/offline/iql/antmaze/large_play_v2.yaml
+      - configs/offline/iql/relocate/expert_v1.yaml
+      - configs/offline/iql/relocate/human_v1.yaml
+      - configs/offline/iql/relocate/cloned_v1.yaml
+      - configs/offline/iql/walker2d/medium_replay_v2.yaml
+      - configs/offline/iql/walker2d/medium_v2.yaml
+      - configs/offline/iql/walker2d/medium_expert_v2.yaml
+      - configs/offline/iql/walker2d/random_v2.yaml
+      - configs/offline/iql/walker2d/expert_v2.yaml
+      - configs/offline/iql/walker2d/full_replay_v2.yaml
+      - configs/offline/iql/pen/expert_v1.yaml
+      - configs/offline/iql/pen/human_v1.yaml
+      - configs/offline/iql/pen/cloned_v1.yaml
+  critic_hidden_dims:
+    values:
+      - - 256
+        - 256
+      - - 256
+        - 256
+        - 256
+      - - 256
+        - 256
+        - 256
+        - 256
+      - - 256
+        - 256
+        - 256
+        - 256
+        - 256
+      - - 256
+        - 256
+        - 256
+        - 256
+        - 256
+        - 256
+  train_seed:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+program: src/algorithms/iql.py

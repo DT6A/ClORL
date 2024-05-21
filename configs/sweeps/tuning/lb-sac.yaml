@@ -1,0 +1,71 @@
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+method: grid
+metric:
+  goal: maximize
+  name: eval/normalized_score_mean
+name: LB-SAC, Param Search
+parameters:
+  actor_learning_rate:
+    value: 0.0006
+  alpha_learning_rate:
+    value: 0.0006
+  batch_size:
+    value: 1024
+  config_path:
+    values:
+      - configs/offline/lb-sac/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/lb-sac/halfcheetah/medium_v2.yaml
+      - configs/offline/lb-sac/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/lb-sac/halfcheetah/random_v2.yaml
+      - configs/offline/lb-sac/halfcheetah/expert_v2.yaml
+      - configs/offline/lb-sac/halfcheetah/full_replay_v2.yaml
+      - configs/offline/lb-sac/hammer/expert_v1.yaml
+      - configs/offline/lb-sac/hammer/human_v1.yaml
+      - configs/offline/lb-sac/hammer/cloned_v1.yaml
+      - configs/offline/lb-sac/hopper/medium_replay_v2.yaml
+      - configs/offline/lb-sac/hopper/medium_v2.yaml
+      - configs/offline/lb-sac/hopper/medium_expert_v2.yaml
+      - configs/offline/lb-sac/hopper/random_v2.yaml
+      - configs/offline/lb-sac/hopper/expert_v2.yaml
+      - configs/offline/lb-sac/hopper/full_replay_v2.yaml
+      - configs/offline/lb-sac/door/expert_v1.yaml
+      - configs/offline/lb-sac/door/human_v1.yaml
+      - configs/offline/lb-sac/door/cloned_v1.yaml
+      - configs/offline/lb-sac/antmaze/umaze_v2.yaml
+      - configs/offline/lb-sac/antmaze/medium_play_v2.yaml
+      - configs/offline/lb-sac/antmaze/medium_diverse_v2.yaml
+      - configs/offline/lb-sac/antmaze/large_diverse_v2.yaml
+      - configs/offline/lb-sac/antmaze/umaze_diverse_v2.yaml
+      - configs/offline/lb-sac/antmaze/large_play_v2.yaml
+      - configs/offline/lb-sac/relocate/expert_v1.yaml
+      - configs/offline/lb-sac/relocate/human_v1.yaml
+      - configs/offline/lb-sac/relocate/cloned_v1.yaml
+      - configs/offline/lb-sac/walker2d/medium_replay_v2.yaml
+      - configs/offline/lb-sac/walker2d/medium_v2.yaml
+      - configs/offline/lb-sac/walker2d/medium_expert_v2.yaml
+      - configs/offline/lb-sac/walker2d/random_v2.yaml
+      - configs/offline/lb-sac/walker2d/expert_v2.yaml
+      - configs/offline/lb-sac/walker2d/full_replay_v2.yaml
+      - configs/offline/lb-sac/pen/expert_v1.yaml
+      - configs/offline/lb-sac/pen/human_v1.yaml
+      - configs/offline/lb-sac/pen/cloned_v1.yaml
+  critic_learning_rate:
+    value: 0.0006
+  num_critics:
+    values:
+      - 2
+      - 5
+      - 10
+      - 25
+      - 50
+  train_seed:
+    values:
+      - 0
+      - 1
+      - 2
+      - 3
+program: src/algorithms/lb_sac.py

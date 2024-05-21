@@ -1,0 +1,16 @@
+--find-links https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+jax[cuda12_pip]==0.4.25
+
+tqdm==4.66.2
+wandb==0.16.4
+pyrallis==0.3.1
+
+flax==0.8.2
+chex==0.1.86
+distrax==0.1.5
+optax==0.2.1
+
+git+https://github.com/Farama-Foundation/d4rl@master#egg=d4rl
+mujoco-py==2.1.2.14
+gym[mujoco_py]==0.23.0
+cython<3
