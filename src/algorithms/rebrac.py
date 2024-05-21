@@ -33,7 +33,7 @@ default_bias_init = nn.initializers.zeros
 @dataclass
 class Config:
     # wandb params
-    project: str = "CORL"
+    project: str = "ClORL"
     group: str = "rebrac"
     name: str = "rebrac"
     # model params

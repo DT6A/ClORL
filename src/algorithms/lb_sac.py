@@ -27,7 +27,7 @@ from flax.training.train_state import TrainState
 @dataclass
 class Config:
     # wandb params
-    project: str = "SAC-N-JAX"
+    project: str = "ClORL"
     group: str = "LB-SAC"
     name: str = "lb-sac"
     # model params

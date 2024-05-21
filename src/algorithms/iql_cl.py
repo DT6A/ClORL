@@ -34,9 +34,9 @@ tfb = tfp.bijectors
 @dataclass
 class Config:
     # wandb params
-    project: str = "CORL"
+    project: str = "ClORL"
     group: str = "iql"
-    name: str = "iql"
+    name: str = "iql-ce"
     
     # model params
     actor_hidden_dims: List[int] = field(default_factory=lambda: [256, 256])

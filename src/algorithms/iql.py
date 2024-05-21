@@ -34,7 +34,7 @@ tfb = tfp.bijectors
 @dataclass
 class Config:
     # wandb params
-    project: str = "CORL"
+    project: str = "ClORL"
     group: str = "iql"
     name: str = "iql"
     
