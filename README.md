@@ -49,9 +49,10 @@ PYTHONPATH=. python3 src/algorithms/rebrac_cl.py --config_path="configs/rebrac-c
 ```
 
 ### Targeted Reproduction
-For better transparency and replication, we release all the experiments (5k+) in the form of [Weights & Biases reports](https://wandb.ai/tlab/ReBRAC/reportlist).
 
-If you want to replicate results from our work, you can use the configs for [Weights & Biases Sweeps](https://docs.wandb.ai/guides/sweeps/quickstart) provided in the `configs/sweeps`. Note, we do not supply a codebase for both IQL and SAC-RND. However, in our work, we relied upon these implementations: [IQL (CORL)](https://github.com/corl-team/CORL), [SAC-RND (original implementation)](https://github.com/tinkoff-ai/sac-rnd).
+[//]: # (For better transparency and replication, we release all the experiments in the form of [Weights & Biases reports]&#40;https://wandb.ai/tlab/ReBRAC/reportlist&#41;.)
+
+If you want to replicate results from our work, you can use the configs for [Weights & Biases Sweeps](https://docs.wandb.ai/guides/sweeps/quickstart) provided in the `configs/sweeps`.
 
 | Paper element          | Sweeps path (we omit the common prefix `configs/sweeps/`)                                                                             |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
