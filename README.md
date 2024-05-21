@@ -1,5 +1,6 @@
-# Is Value Functions Estimation with Classification Plug-and-play for Offline Reinforcement Learning
+# Offline Reinforcement Learning with Classification
 
+The repository organisation is inspired by [CORL](https://github.com/corl-team/CORL) and  [ReBRAC](https://github.com/DT6A/ReBRAC/tree/public-release) repositories.
 ## Dependencies & Docker setup
 To set up a python environment (with dev-tools of your taste, in our workflow, we use conda and python 3.8), just install all the requirements:
 
@@ -52,12 +53,13 @@ For better transparency and replication, we release all the experiments (5k+) in
 
 If you want to replicate results from our work, you can use the configs for [Weights & Biases Sweeps](https://docs.wandb.ai/guides/sweeps/quickstart) provided in the `configs/sweeps`. Note, we do not supply a codebase for both IQL and SAC-RND. However, in our work, we relied upon these implementations: [IQL (CORL)](https://github.com/corl-team/CORL), [SAC-RND (original implementation)](https://github.com/tinkoff-ai/sac-rnd).
 
-| Paper element          | Sweeps path (we omit the common prefix `configs/sweeps/`)    |
-|------------------------|--------------------------------------------------------------|
+| Paper element          | Sweeps path (we omit the common prefix `configs/sweeps/`)                                                                             |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | Tables 1, 2, 3         | `eval/<algorithm_name>.yaml`, `eval/<algorithm_name>-ce.yaml`, `eval/<algorithm_name>-ce-at.yaml`, `eval/<algorithm_name>-ce-ct.yaml` |
-| Figure 2               | All sweeps from `network_sizes`                              |
-| Hyperparameter         | All sweeps from `tuning`                                     |
+| Figure 2               | All sweeps from `expand`                                                                                                       |
+| Figure 3               | All sweeps from `network_sizes`                                                                                                |
+| Hyperparameters tuning | All sweeps from `tuning`                                                                                                              |
 
 ### Reliable Reports
 
-We also provide scripts for reconstructing the graphs in our paper: `eop/ploting.ipynb`, including performance profiles, probability of improvement, and expected online performance. For your convenience, we repacked the results into .pickle files, so you can re-use them for further research and head-to-head comparisons. 
+We also provide a script and binary data for reconstructing the graphs and tables from our paper: `plotting/plotting.py`. We repacked the results into .pickle files, so you can re-use them for further research and head-to-head comparisons.

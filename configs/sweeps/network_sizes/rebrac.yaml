@@ -1,4 +1,3 @@
-project: ClORL
 command:
   - ${env}
   - python3
@@ -8,6 +7,15 @@ method: grid
 parameters:
   config_path:
     values:
+      - configs/offline/rebrac/hopper/full_replay_v2.yaml
+      - configs/offline/rebrac/hopper/random_v2.yaml
+      - configs/offline/rebrac/hopper/expert_v2.yaml
+      - configs/offline/rebrac/halfcheetah/full_replay_v2.yaml
+      - configs/offline/rebrac/halfcheetah/random_v2.yaml
+      - configs/offline/rebrac/halfcheetah/expert_v2.yaml
+      - configs/offline/rebrac/walker2d/full_replay_v2.yaml
+      - configs/offline/rebrac/walker2d/random_v2.yaml
+      - configs/offline/rebrac/walker2d/expert_v2.yaml
       - configs/offline/rebrac/hopper/medium_replay_v2.yaml
       - configs/offline/rebrac/hopper/medium_v2.yaml
       - configs/offline/rebrac/hopper/medium_expert_v2.yaml
@@ -17,6 +25,12 @@ parameters:
       - configs/offline/rebrac/walker2d/medium_replay_v2.yaml
       - configs/offline/rebrac/walker2d/medium_v2.yaml
       - configs/offline/rebrac/walker2d/medium_expert_v2.yaml
+      - configs/offline/rebrac/antmaze/umaze_v2.yaml
+      - configs/offline/rebrac/antmaze/umaze_diverse_v2.yaml
+      - configs/offline/rebrac/antmaze/medium_play_v2.yaml
+      - configs/offline/rebrac/antmaze/medium_diverse_v2.yaml
+      - configs/offline/rebrac/antmaze/large_play_v2.yaml
+      - configs/offline/rebrac/antmaze/large_diverse_v2.yaml
       - configs/offline/rebrac/pen/human_v1.yaml
       - configs/offline/rebrac/pen/cloned_v1.yaml
       - configs/offline/rebrac/pen/expert_v1.yaml
@@ -29,26 +43,23 @@ parameters:
       - configs/offline/rebrac/relocate/human_v1.yaml
       - configs/offline/rebrac/relocate/cloned_v1.yaml
       - configs/offline/rebrac/relocate/expert_v1.yaml
-      - configs/offline/rebrac/hopper/full_replay_v2.yaml
-      - configs/offline/rebrac/hopper/random_v2.yaml
-      - configs/offline/rebrac/hopper/expert_v2.yaml
-      - configs/offline/rebrac/halfcheetah/full_replay_v2.yaml
-      - configs/offline/rebrac/halfcheetah/random_v2.yaml
-      - configs/offline/rebrac/halfcheetah/expert_v2.yaml
-      - configs/offline/rebrac/walker2d/full_replay_v2.yaml
-      - configs/offline/rebrac/walker2d/random_v2.yaml
-      - configs/offline/rebrac/walker2d/expert_v2.yaml
-      - configs/offline/rebrac/antmaze/umaze_v2.yaml
-      - configs/offline/rebrac/antmaze/umaze_diverse_v2.yaml
-      - configs/offline/rebrac/antmaze/medium_play_v2.yaml
-      - configs/offline/rebrac/antmaze/medium_diverse_v2.yaml
-      - configs/offline/rebrac/antmaze/large_play_v2.yaml
-      - configs/offline/rebrac/antmaze/large_diverse_v2.yaml
+  critic_n_hiddens:
+    values:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+  n_classes:
+    value: 101
+  num_epochs:
+    value: 1000
+  sigma_frac:
+    value: 0.75
   train_seed:
     values:
-      - 10
-      - 11
-      - 12
-      - 13
+      - 0
+      - 1
+      - 2
+      - 3
 program: src/algorithms/rebrac.py
-

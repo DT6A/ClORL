@@ -14,12 +14,12 @@ parameters:
       - 0.003
   config_path:
     values:
-      - configs_tuned/offline/rebrac/antmaze/umaze_v2.yaml
-      - configs_tuned/offline/rebrac/antmaze/umaze_diverse_v2.yaml
-      - configs_tuned/offline/rebrac/antmaze/medium_play_v2.yaml
-      - configs_tuned/offline/rebrac/antmaze/medium_diverse_v2.yaml
-      - configs_tuned/offline/rebrac/antmaze/large_play_v2.yaml
-      - configs_tuned/offline/rebrac/antmaze/large_diverse_v2.yaml
+      - configs_tuned/offline/rebrac-ce/antmaze/umaze_v2.yaml
+      - configs_tuned/offline/rebrac-ce/antmaze/umaze_diverse_v2.yaml
+      - configs_tuned/offline/rebrac-ce/antmaze/medium_play_v2.yaml
+      - configs_tuned/offline/rebrac-ce/antmaze/medium_diverse_v2.yaml
+      - configs_tuned/offline/rebrac-ce/antmaze/large_play_v2.yaml
+      - configs_tuned/offline/rebrac-ce/antmaze/large_diverse_v2.yaml
   critic_bc_coef:
     values:
       - 0

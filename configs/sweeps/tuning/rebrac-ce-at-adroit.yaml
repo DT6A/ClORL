@@ -14,18 +14,18 @@ parameters:
       - 0.1
   config_path:
     values:
-      - configs/offline/rebrac/pen/human_v1.yaml
-      - configs/offline/rebrac/pen/cloned_v1.yaml
-      - configs/offline/rebrac/pen/expert_v1.yaml
-      - configs/offline/rebrac/door/human_v1.yaml
-      - configs/offline/rebrac/door/cloned_v1.yaml
-      - configs/offline/rebrac/door/expert_v1.yaml
-      - configs/offline/rebrac/hammer/human_v1.yaml
-      - configs/offline/rebrac/hammer/cloned_v1.yaml
-      - configs/offline/rebrac/hammer/expert_v1.yaml
-      - configs/offline/rebrac/relocate/human_v1.yaml
-      - configs/offline/rebrac/relocate/cloned_v1.yaml
-      - configs/offline/rebrac/relocate/expert_v1.yaml
+      - configs/offline/rebrac-ce/pen/human_v1.yaml
+      - configs/offline/rebrac-ce/pen/cloned_v1.yaml
+      - configs/offline/rebrac-ce/pen/expert_v1.yaml
+      - configs/offline/rebrac-ce/door/human_v1.yaml
+      - configs/offline/rebrac-ce/door/cloned_v1.yaml
+      - configs/offline/rebrac-ce/door/expert_v1.yaml
+      - configs/offline/rebrac-ce/hammer/human_v1.yaml
+      - configs/offline/rebrac-ce/hammer/cloned_v1.yaml
+      - configs/offline/rebrac-ce/hammer/expert_v1.yaml
+      - configs/offline/rebrac-ce/relocate/human_v1.yaml
+      - configs/offline/rebrac-ce/relocate/cloned_v1.yaml
+      - configs/offline/rebrac-ce/relocate/expert_v1.yaml
   critic_bc_coef:
     values:
       - 0

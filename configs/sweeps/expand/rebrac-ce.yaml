@@ -1,4 +1,3 @@
-project: ClORL
 command:
   - ${env}
   - python3
@@ -44,21 +43,23 @@ parameters:
       - configs/offline/rebrac-ce/relocate/human_v1.yaml
       - configs/offline/rebrac-ce/relocate/cloned_v1.yaml
       - configs/offline/rebrac-ce/relocate/expert_v1.yaml
-  n_classes:
+  v_expand:
     values:
-      - 21
-      - 51
-      - 101
-      - 201
-      - 401
+      - -0.05
+      - 0
+      - 0.05
+      - 0.1
+      - 0.2
+  v_expand_mode:
+    values:
+      - both
+      - min
+  n_classes:
+    value: 101
   num_epochs:
     value: 1000
   sigma_frac:
-    values:
-      - 0.55
-      - 0.65
-      - 0.75
-      - 0.85
+    value: 0.75
   train_seed:
     values:
       - 0

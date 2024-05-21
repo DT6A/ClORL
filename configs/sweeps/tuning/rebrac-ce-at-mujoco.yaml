@@ -14,24 +14,24 @@ parameters:
       - 0.1
   config_path:
     values:
-      - configs/offline/rebrac/hopper/medium_replay_v2.yaml
-      - configs/offline/rebrac/hopper/medium_v2.yaml
-      - configs/offline/rebrac/hopper/medium_expert_v2.yaml
-      - configs/offline/rebrac/halfcheetah/medium_replay_v2.yaml
-      - configs/offline/rebrac/halfcheetah/medium_v2.yaml
-      - configs/offline/rebrac/halfcheetah/medium_expert_v2.yaml
-      - configs/offline/rebrac/walker2d/medium_replay_v2.yaml
-      - configs/offline/rebrac/walker2d/medium_v2.yaml
-      - configs/offline/rebrac/walker2d/medium_expert_v2.yaml
-      - configs/offline/rebrac/hopper/full_replay_v2.yaml
-      - configs/offline/rebrac/hopper/random_v2.yaml
-      - configs/offline/rebrac/hopper/expert_v2.yaml
-      - configs/offline/rebrac/halfcheetah/full_replay_v2.yaml
-      - configs/offline/rebrac/halfcheetah/random_v2.yaml
-      - configs/offline/rebrac/halfcheetah/expert_v2.yaml
-      - configs/offline/rebrac/walker2d/full_replay_v2.yaml
-      - configs/offline/rebrac/walker2d/random_v2.yaml
-      - configs/offline/rebrac/walker2d/expert_v2.yaml
+      - configs/offline/rebrac-ce/hopper/medium_replay_v2.yaml
+      - configs/offline/rebrac-ce/hopper/medium_v2.yaml
+      - configs/offline/rebrac-ce/hopper/medium_expert_v2.yaml
+      - configs/offline/rebrac-ce/halfcheetah/medium_replay_v2.yaml
+      - configs/offline/rebrac-ce/halfcheetah/medium_v2.yaml
+      - configs/offline/rebrac-ce/halfcheetah/medium_expert_v2.yaml
+      - configs/offline/rebrac-ce/walker2d/medium_replay_v2.yaml
+      - configs/offline/rebrac-ce/walker2d/medium_v2.yaml
+      - configs/offline/rebrac-ce/walker2d/medium_expert_v2.yaml
+      - configs/offline/rebrac-ce/hopper/full_replay_v2.yaml
+      - configs/offline/rebrac-ce/hopper/random_v2.yaml
+      - configs/offline/rebrac-ce/hopper/expert_v2.yaml
+      - configs/offline/rebrac-ce/halfcheetah/full_replay_v2.yaml
+      - configs/offline/rebrac-ce/halfcheetah/random_v2.yaml
+      - configs/offline/rebrac-ce/halfcheetah/expert_v2.yaml
+      - configs/offline/rebrac-ce/walker2d/full_replay_v2.yaml
+      - configs/offline/rebrac-ce/walker2d/random_v2.yaml
+      - configs/offline/rebrac-ce/walker2d/expert_v2.yaml
   critic_bc_coef:
     values:
       - 0
