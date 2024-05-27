@@ -1,4 +1,4 @@
-actor_bc_coef: 0.002
+actor_bc_coef: 0.01
 actor_learning_rate: 0.001
 actor_ln: false
 actor_n_hiddens: 3
@@ -28,3 +28,6 @@ tau: 0.005
 train_seed: 0
 v_min: 0
 v_max: 100
+v_expand: 0.1
+v_expand_mode: "both"
+n_classes: 401

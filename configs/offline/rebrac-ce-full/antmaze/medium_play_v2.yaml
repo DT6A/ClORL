@@ -28,3 +28,6 @@ tau: 0.005
 train_seed: 0
 v_min: 0
 v_max: 100
+v_expand: 0.05
+v_expand_mode: "both"
+n_classes: 401

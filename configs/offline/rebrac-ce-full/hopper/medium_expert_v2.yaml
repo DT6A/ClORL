@@ -1,4 +1,4 @@
-actor_bc_coef: 0.1
+actor_bc_coef: 0.05
 actor_learning_rate: 0.001
 actor_ln: false
 actor_n_hiddens: 3
@@ -26,3 +26,6 @@ policy_noise: 0.2
 project: ReBRAC
 tau: 0.005
 train_seed: 0
+v_expand: 0.05
+v_expand_mode: "both"
+n_classes: 401
