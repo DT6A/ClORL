@@ -11,4 +11,4 @@ normalize_states: true
 state_dependent_std: true
 tanh_squash_distribution: false
 tau: 0.001
-temperature: 0.5
+temperature: 3.0
