@@ -2,7 +2,7 @@ actor_learning_rate: 3e-4
 critic_learning_rate: 3e-4
 dataset_name: pen-expert-v1
 dropout_rate: 0.1
-expectile: 0.9
+expectile: 0.5
 gamma: 0.99
 log_std_max: 2.0
 log_std_min: -20.0
@@ -12,3 +12,6 @@ state_dependent_std: true
 tanh_squash_distribution: false
 tau: 0.005
 temperature: 3.0
+v_expand: -0.05
+v_expand_mode: "both"
+n_classes: 401

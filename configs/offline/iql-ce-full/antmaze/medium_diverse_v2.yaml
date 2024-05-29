@@ -16,3 +16,6 @@ eval_episodes: 100
 eval_every: 50
 v_min: 0
 v_max: 100
+v_expand: 0.1
+v_expand_mode: "both"
+n_classes: 401
