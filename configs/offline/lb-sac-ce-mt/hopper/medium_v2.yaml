@@ -7,7 +7,7 @@ alpha_learning_rate: 6e-4
 batch_size: 1024
 critic_ln: True
 num_critics: 25
-n_classes: 101
+n_classes: 401
 sigma_frac: 0.75
-v_expand: 0.
+v_expand: 0.1
 v_expand_mode: "both"
