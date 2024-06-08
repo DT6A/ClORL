@@ -12,3 +12,5 @@ n_classes: 101
 sigma_frac: 0.75
 v_min: 0
 v_max: 100
+v_expand: 0.
+v_expand_mode: "both"
