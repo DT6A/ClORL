@@ -172,7 +172,7 @@ def expected_online_performance_arbit(
     }
 
 
-def get_data_from_sweeps(sweeps_ids, param_1="actor_bc_coef", param_2="critic_bc_coef"):
+def get_data_from_sweeps(sweeps_ids, param_1="actor_bc_coef", param_2="critic_bc_coef", param_3=None):
     maxes = []
     lasts = []
     name_list = []
@@ -200,15 +200,24 @@ def get_data_from_sweeps(sweeps_ids, param_1="actor_bc_coef", param_2="critic_bc
             if str(config[param_1]) not in full_scores[config["dataset_name"]]:
                 full_scores[config["dataset_name"]][str(config[param_1])] = {}
             if str(config[param_2]) not in full_scores[config["dataset_name"]][str(config[param_1])]:
-                full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])] = []
+                if param_3 is None:
+                    full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])] = []
+                else:
+                    full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])] = {}
+            if param_3 is not None and str(config[param_3]) not in full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])]:
+                full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])][str(config[param_3])] = []
             # print("LEN", len(all_scores))
             if len(all_scores) == 0:
                 continue
             last_score_idx = -1
             if "antmaze" in config["dataset_name"]:
                 last_score_idx = min(20, len(all_scores) - 1)
-            full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])].append(
-                all_scores[last_score_idx])
+            if param_3 is None:
+                full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])].append(
+                    all_scores[last_score_idx])
+            else:
+                full_scores[config["dataset_name"]][str(config[param_1])][str(config[param_2])][str(config[param_3])].append(
+                    all_scores[last_score_idx])
             config_list.append(config)
             name_list.append(run.name)
             lasts.append(last)
@@ -216,7 +225,7 @@ def get_data_from_sweeps(sweeps_ids, param_1="actor_bc_coef", param_2="critic_bc
     return full_scores
 
 
-def average_seeds(full_scores, is_td3=False):
+def average_seeds(full_scores, is_td3=False, three_params=False):
     S = 0
     full_means = {}
     bests = {}
@@ -224,19 +233,32 @@ def average_seeds(full_scores, is_td3=False):
         ba, bc, bmean, bstd = 0, 0, 0, 0
         for ac in full_scores[dataset]:
             for cc in full_scores[dataset][ac]:
-                score = np.mean(full_scores[dataset][ac][cc])
-                std = np.std(full_scores[dataset][ac][cc])
-                if bmean <= score:
-                    bmean = score
-                    bstd = std
-                    ba = ac
-                    bc = cc
-                if dataset not in full_means:
-                    full_means[dataset] = {}
-                ka = ac
-                if cc not in full_means[dataset]:
-                    full_means[dataset][cc] = {}
-                full_means[dataset][cc][ka] = score
+                if not three_params:
+                    score = np.mean(full_scores[dataset][ac][cc])
+                    std = np.std(full_scores[dataset][ac][cc])
+                    if bmean <= score:
+                        bmean = score
+                        bstd = std
+                        ba = ac
+                        bc = cc
+                    if dataset not in full_means:
+                        full_means[dataset] = {}
+                    ka = ac
+                    if cc not in full_means[dataset]:
+                        full_means[dataset][cc] = {}
+                    full_means[dataset][cc][ka] = score
+                else:
+                    for tp in full_scores[dataset][ac][cc]:
+                        score = np.mean(full_scores[dataset][ac][cc][tp])
+                        std = np.std(full_scores[dataset][ac][cc][tp])
+                        if dataset not in full_means:
+                            full_means[dataset] = {}
+                        ka = ac
+                        if cc not in full_means[dataset]:
+                            full_means[dataset][cc] = {}
+                        if ka not in full_means[dataset][cc]:
+                            full_means[dataset][cc][ka] = {}
+                        full_means[dataset][cc][ka][tp] = score
         bests[dataset] = {}
         S += bmean
     return full_means
@@ -249,7 +271,7 @@ domain2envs = {
 }
 
 
-def average_domains(full_means):
+def average_domains(full_means, domains_to_proc=["Gym-MuJoCo", "AntMaze", "Adroit"], three_params=False):
     domain_avgereged = {}
 
     unique_cc = {
@@ -262,37 +284,67 @@ def average_domains(full_means):
         "AntMaze": None,
         "Adroit": None
     }
-    print(list(full_means.keys()))
+    if three_params:
+        unique_tp = {
+            "Gym-MuJoCo": None,
+            "AntMaze": None,
+            "Adroit": None
+        }
+
+    # print(list(full_means.keys()))
     unique_cc["Gym-MuJoCo"] = list(full_means["hopper-medium-v2"].keys())
     unique_ac["Gym-MuJoCo"] = list(full_means["hopper-medium-v2"][unique_cc["Gym-MuJoCo"][0]].keys())
+    if three_params:
+        unique_tp["Gym-MuJoCo"] = list(full_means["hopper-medium-v2"][unique_cc["Gym-MuJoCo"][0]][unique_ac["Gym-MuJoCo"][0]].keys())
 
     unique_cc["AntMaze"] = list(full_means["antmaze-umaze-v2"].keys())
     unique_ac["AntMaze"] = list(full_means["antmaze-umaze-v2"][unique_cc["AntMaze"][0]].keys())
+    if three_params:
+        unique_tp["AntMaze"] = list(
+            full_means["antmaze-umaze-v2"][unique_cc["AntMaze"][0]][unique_ac["AntMaze"][0]].keys())
 
     unique_cc["Adroit"] = list(full_means["door-expert-v1"].keys())
     unique_ac["Adroit"] = list(full_means["door-expert-v1"][unique_cc["Adroit"][0]].keys())
+    if three_params:
+        unique_tp["Adroit"] = list(
+            full_means["door-expert-v1"][unique_cc["Adroit"][0]][unique_ac["Adroit"][0]].keys())
 
-    for domain in ["Gym-MuJoCo", "AntMaze", "Adroit"]:
+    for domain in domains_to_proc:
         domain_avgereged[domain] = {}
         for cc in unique_cc[domain]:
             if cc not in domain_avgereged[domain]:
                 domain_avgereged[domain][cc] = {}
             for ac in unique_ac[domain]:
-                avg = []
-                for data in full_means:
-                    is_domain = False
-                    for env in domain2envs[domain]:
-                        if env in data:
-                            is_domain = True
-                            break
-                    if is_domain:
-                        avg.append(full_means[data][cc][ac])
-                domain_avgereged[domain][cc][ac] = np.mean(avg)
+                if not three_params:
+                    avg = []
+                    for data in full_means:
+                        is_domain = False
+                        for env in domain2envs[domain]:
+                            if env in data:
+                                is_domain = True
+                                break
+                        if is_domain:
+                            avg.append(full_means[data][cc][ac])
+                    domain_avgereged[domain][cc][ac] = np.mean(avg)
+                else:
+                    if ac not in domain_avgereged[domain][cc]:
+                        domain_avgereged[domain][cc][ac] = {}
+                    for tp in unique_tp[domain]:
+                        avg = []
+                        for data in full_means:
+                            is_domain = False
+                            for env in domain2envs[domain]:
+                                if env in data:
+                                    is_domain = True
+                                    break
+                            if is_domain:
+                                avg.append(full_means[data][cc][ac][tp])
+                        domain_avgereged[domain][cc][ac][tp] = np.mean(avg)
 
     return domain_avgereged
 
 
-def listed_avg(data):
+def listed_avg(data, three_params=False):
     listed_avg = {}
 
     for env in data:
@@ -300,39 +352,43 @@ def listed_avg(data):
             listed_avg[env] = []
         for ac in data[env]:
             for cc in data[env][ac]:
-                listed_avg[env].append(data[env][ac][cc])
+                if not three_params:
+                    listed_avg[env].append(data[env][ac][cc])
+                else:
+                    for tp in data[env][ac][cc]:
+                        listed_avg[env].append(data[env][ac][cc][tp])
     return listed_avg
 
 
-def convert_to_lists(full_means, domains_avg):
+def convert_to_lists(full_means, domains_avg, three_params=False):
     listed_all = {}
     listed_domains = {}
     for algo in full_means:
-        listed_all[algo] = listed_avg(full_means[algo])
-        listed_domains[algo] = listed_avg(domains_avg[algo])
+        listed_all[algo] = listed_avg(full_means[algo], three_params=three_params)
+        listed_domains[algo] = listed_avg(domains_avg[algo], three_params=three_params)
 
     return listed_all, listed_domains
 
 
-def download_data(algo_to_sweeps, param_1="actor_bc_coef", param_2="critic_bc_coef", to_list=True):
+def download_data(algo_to_sweeps, param_1="actor_bc_coef", param_2="critic_bc_coef", param_3=None, to_list=True, domains_to_process=["Gym-MuJoCo", "AntMaze", "Adroit"]):
     data = {}
     for algo in algo_to_sweeps:
         print(f"Downloading {algo} data")
         # if "IQL" in algo:
         #     data[algo] = get_data_from_sweeps_iql(algo_to_sweeps[algo])
         # else:    
-        data[algo] = get_data_from_sweeps(algo_to_sweeps[algo], param_1, param_2)
+        data[algo] = get_data_from_sweeps(algo_to_sweeps[algo], param_1, param_2, param_3)
 
     full_means = {}
     for algo in data:
-        full_means[algo] = average_seeds(data[algo], "TD3" in algo)
+        full_means[algo] = average_seeds(data[algo], "TD3" in algo, param_3 is not None)
 
     domains_avg = {}
     for algo in full_means:
-        domains_avg[algo] = average_domains(full_means[algo])
+        domains_avg[algo] = average_domains(full_means[algo], domains_to_proc=domains_to_process, three_params=param_3 is not None)
 
     if to_list:
-        return convert_to_lists(full_means, domains_avg)
+        return convert_to_lists(full_means, domains_avg, three_params=param_3 is not None)
     else:
         return full_means, domains_avg
 
@@ -394,6 +450,21 @@ def download_data(algo_to_sweeps, param_1="actor_bc_coef", param_2="critic_bc_co
 # with open('bin/expand_iql_all.pickle', 'wb') as handle:
 #     pickle.dump(listed_expand_all_iql, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+
+# listed_expand_all_lb_sac, listed_expand_domains_lb_sac = download_data(
+#     {
+#         "LB-SAC": ["tarasovd/ReBRAC/sweeps/toy22c04"],
+#     },
+#     "v_expand_mode",
+#     "v_expand",
+#     to_list=False,
+# )
+#
+# with open('bin/expand_lb_sac_domains.pickle', 'wb') as handle:
+#     pickle.dump(listed_expand_domains_lb_sac, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# with open('bin/expand_lb_sac_all.pickle', 'wb') as handle:
+#     pickle.dump(listed_expand_all_lb_sac, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#
 with open('bin/expand_rebrac_domains.pickle', 'rb') as handle:
     listed_expand_domains_rebrac = pickle.load(handle)
 with open('bin/expand_rebrac_all.pickle', 'rb') as handle:
@@ -402,6 +473,11 @@ with open('bin/expand_iql_domains.pickle', 'rb') as handle:
     listed_expand_domains_iql = pickle.load(handle)
 with open('bin/expand_iql_all.pickle', 'rb') as handle:
     listed_expand_all_iql = pickle.load(handle)
+
+with open('bin/expand_lb_sac_domains.pickle', 'rb') as handle:
+    listed_expand_domains_lb_sac = pickle.load(handle)
+with open('bin/expand_lb_sac_all.pickle', 'rb') as handle:
+    listed_expand_all_lb_sac = pickle.load(handle)
 
 with open('bin/depth_rebrac_domains.pickle', 'rb') as handle:
     listed_depth_domains_rebrac = pickle.load(handle)
@@ -457,8 +533,8 @@ def proc_expand(data):
     return res_min, res_both
 
 
-
 iql_expand_min, iql_expand_both = proc_expand(listed_expand_domains_iql)
+lb_sac_expand_min, lb_sac_expand_both = proc_expand(listed_expand_domains_lb_sac)
 rebrac_expand_min, rebrac_expand_both = proc_expand(listed_expand_domains_rebrac)
 
 
@@ -467,6 +543,9 @@ for domain in ["Gym-MuJoCo", "AntMaze", "Adroit"]:
     plot_expand_domain(rebrac_expand_both, domain, "ro", "both")
     plot_expand_domain(iql_expand_min, domain, "go", "min")
     plot_expand_domain(iql_expand_both, domain, "go", "both")
+    # if domain == "Gym-MuJoCo":
+    plot_expand_domain(lb_sac_expand_min, domain, "bo", "min")
+    plot_expand_domain(lb_sac_expand_both, domain, "bo", "both")
     plt.grid()
     plt.legend()
     plt.xlabel('Expansion size')
@@ -488,6 +567,10 @@ print("Expand IQL both")
 print(iql_expand_both)
 print("Expand IQL min")
 print(iql_expand_min)
+print("Expand LB-SAC both")
+print(lb_sac_expand_both)
+print("Expand LB-SAC min")
+print(lb_sac_expand_min)
 
 # raise ValueError()
 
@@ -631,6 +714,69 @@ for domain in ["Gym-MuJoCo", "AntMaze", "Adroit"]:
 #     pickle.dump(all_lb_sac_ct, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+# all_rebrac_full, domains_rebrac_full = download_data(
+#      {
+#          "ReBRAC+CE+FULL": ["tarasovd/ReBRAC/sweeps/4zvx44nm"],
+#      },
+#     "n_classes",
+#     "actor_bc_coef",
+#     "v_expand",
+# )
+#
+# with open('bin/rebrac_full_domains.pickle', 'wb') as handle:
+#     pickle.dump(domains_rebrac_full, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# with open('bin/rebrac_full_all.pickle', 'wb') as handle:
+#     pickle.dump(all_rebrac_full, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#
+# all_iql_full, domains_iql_full = download_data(
+#      {
+#          "IQL+CE+FULL": ["tarasovd/ReBRAC/sweeps/7sbwhnxh"],
+#      },
+#     "n_classes",
+#     "expectile",
+#     "v_expand",
+# )
+
+# with open('bin/iql_full_domains.pickle', 'wb') as handle:
+#     pickle.dump(domains_iql_full, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# with open('bin/iql_full_all.pickle', 'wb') as handle:
+#     pickle.dump(all_iql_full, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+# all_lb_sac_full, domains_lb_sac_full = download_data(
+#      {
+#          "LB-SAC+CE+FULL": ["tarasovd/ReBRAC/sweeps/djuujo4o"],
+#      },
+#     "n_classes",
+#     "num_critics",
+#     "v_expand",
+# )
+#
+# with open('bin/lb_sac_full_domains.pickle', 'wb') as handle:
+#     pickle.dump(domains_lb_sac_full, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# with open('bin/lb_sac_full_all.pickle', 'wb') as handle:
+#     pickle.dump(all_lb_sac_full, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+
+with open('bin/rebrac_full_domains.pickle', 'rb') as handle:
+    listed_domains_rebrac_full = pickle.load(handle)
+with open('bin/rebrac_full_all.pickle', 'rb') as handle:
+    listed_all_rebrac_full = pickle.load(handle)
+# listed_all_rebrac_full, listed_domains_rebrac_full = convert_to_lists(listed_all_rebrac_full, listed_domains_rebrac_full, three_params=True)
+
+with open('bin/iql_full_domains.pickle', 'rb') as handle:
+    listed_domains_iql_full = pickle.load(handle)
+with open('bin/iql_full_all.pickle', 'rb') as handle:
+    listed_all_iql_full = pickle.load(handle)
+
+with open('bin/lb_sac_full_domains.pickle', 'rb') as handle:
+    listed_domains_lb_sac_full = pickle.load(handle)
+with open('bin/lb_sac_full_all.pickle', 'rb') as handle:
+    listed_all_lb_sac_full = pickle.load(handle)
+
+# listed_all_iql_full, listed_domains_iql_full = convert_to_lists(listed_all_iql_full, listed_domains_iql_full, three_params=True)
+# raise ValueError()
 
 # with open('bin/eop_rebrac_at_domains.pickle', 'rb') as handle:
 #     listed_domains_rebrac = pickle.load(handle)
@@ -811,6 +957,9 @@ with open('bin/eop_cls_domains.pickle', 'rb') as handle:
 with open('bin/eop_cls_all.pickle', 'rb') as handle:
     listed_all = pickle.load(handle)
 
+listed_domains.update(**listed_domains_rebrac_full)
+listed_domains.update(**listed_domains_iql_full)
+listed_domains.update(**listed_domains_lb_sac_full)
 
 def print_tables(data, algorithms, points=[0, 1, 2, 4, 9, 14, 19]):
     # algorithms = ["TD3 + BC", "IQL", "ReBRAC"]
@@ -932,3 +1081,8 @@ print_tables(listed_domains,
              ["ReBRAC", "ReBRAC+CE+AT", "ReBRAC+CE+CT", "IQL", "IQL+CE+AT", "IQL+CE+CT", "LB-SAC", "LB-SAC+CE+AT"])
 
 print_tables(listed_domains, ["LB-SAC+CE+CT"], points=[0, 1, 2, 4, 8, 14, 19])
+
+# print(listed_domains["ReBRAC"])
+# print(listed_domains["ReBRAC+CE+FULL"])
+print_tables(listed_domains,
+             ["ReBRAC", "ReBRAC+CE+FULL", "IQL", "IQL+CE+FULL", "LB-SAC", "LB-SAC+CE+FULL"], points=[0, 1, 2, 4, 8, 14, 17])
