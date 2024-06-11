@@ -984,10 +984,10 @@ def print_tables(data, algorithms, points=[0, 1, 2, 4, 9, 14, 19]):
             print("& \\textbf{" + algo + "} &", end=" ")
             for point in points:
                 if point >= len(reward):
-                    print("-", end=(" & " if point != 19 else "\\\\\n"))
+                    print("-", end=(" & " if point != points[-1] else "\\\\\n"))
                 else:
                     print("{:3.1f}".format(means[point]), "$\pm$", "{:3.1f}".format(stds[point]),
-                          end=(" & " if point != 19 else "\\\\\n"))
+                          end=(" & " if point != points[-1] else "\\\\\n"))
 
 
 def print_v_tables(data, algorithms):
@@ -1078,7 +1078,7 @@ def print_v_tables(data, algorithms):
 
 print("EOP:")
 print_tables(listed_domains,
-             ["ReBRAC", "ReBRAC+CE+AT", "ReBRAC+CE+CT", "IQL", "IQL+CE+AT", "IQL+CE+CT", "LB-SAC", "LB-SAC+CE+AT"])
+             ["ReBRAC", "ReBRAC+CE+AT", "ReBRAC+CE+CT", "ReBRAC+CE+FULL", "IQL", "IQL+CE+AT", "IQL+CE+CT", "IQL+CE+FULL", "LB-SAC", "LB-SAC+CE+AT", "LB-SAC+CE+FULL"], points=[0, 1, 2, 4, 9, 14, 17, 19])
 
 print_tables(listed_domains, ["LB-SAC+CE+CT"], points=[0, 1, 2, 4, 8, 14, 19])
 

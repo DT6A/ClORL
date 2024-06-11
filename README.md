@@ -1,4 +1,5 @@
 # Offline Reinforcement Learning with Classification
+[![arXiv](https://img.shields.io/badge/arXiv-2406.06309-b31b1b.svg)](https://arxiv.org/abs/2406.06309)
 
 The repository organisation is inspired by [CORL](https://github.com/corl-team/CORL) and  [ReBRAC](https://github.com/DT6A/ReBRAC/tree/public-release) repositories.
 ## Dependencies & Docker setup
@@ -51,15 +52,16 @@ PYTHONPATH=. python3 src/algorithms/rebrac_cl.py --config_path="configs/rebrac-c
 ### Targeted Reproduction
 
 [//]: # (For better transparency and replication, we release all the experiments in the form of [Weights & Biases reports]&#40;https://wandb.ai/tlab/ReBRAC/reportlist&#41;.)
+We provide Weights & Biases logs for all of our experiments [here](https://wandb.ai/tarasovd/ClORL/sweeps).
 
 If you want to replicate results from our work, you can use the configs for [Weights & Biases Sweeps](https://docs.wandb.ai/guides/sweeps/quickstart) provided in the `configs/sweeps`.
 
-| Paper element          | Sweeps path (we omit the common prefix `configs/sweeps/`)                                                                             |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| Tables 1, 2, 3         | `eval/<algorithm_name>.yaml`, `eval/<algorithm_name>-ce.yaml`, `eval/<algorithm_name>-ce-at.yaml`, `eval/<algorithm_name>-ce-ct.yaml` |
-| Figure 2               | All sweeps from `expand`                                                                                                       |
-| Figure 3               | All sweeps from `network_sizes`                                                                                                |
-| Hyperparameters tuning | All sweeps from `tuning`                                                                                                              |
+| Paper element              | Sweeps path (we omit the common prefix `configs/sweeps/`)                                                                                                                 |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Tables 1, 2, 3, 16, 17, 18 | `eval/<algorithm_name>.yaml`, `eval/<algorithm_name>-ce.yaml`, `eval/<algorithm_name>-ce-at.yaml`, `eval/<algorithm_name>-ce-ct.yaml`, `eval/<algorithm_name>-ce-mt.yaml` |
+| Figure 2                   | All sweeps from `expand`                                                                                                                                                  |
+| Figure 3                   | All sweeps from `network_sizes`                                                                                                                                           |
+| Hyperparameters tuning     | All sweeps from `tuning`                                                                                                                                                  |
 
 ### Reliable Reports
 
