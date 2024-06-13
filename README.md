@@ -66,3 +66,14 @@ If you want to replicate results from our work, you can use the configs for [Wei
 ### Reliable Reports
 
 We also provide a script and binary data for reconstructing the graphs and tables from our paper: `plotting/plotting.py`. We repacked the results into .pickle files, so you can re-use them for further research and head-to-head comparisons.
+
+# Citing
+If you use this code for your research, please consider the following bibtex:
+```
+@article{tarasov2024value,
+  title={Is Value Functions Estimation with Classification Plug-and-play for Offline Reinforcement Learning?},
+  author={Tarasov, Denis and Brilliantov, Kirill and Kharlapenko, Dmitrii},
+  journal={arXiv preprint arXiv:2406.06309},
+  year={2024}
+}
+```
